@@ -9,7 +9,9 @@ typedef enum {
     EV_FOUND,
     EV_DOWNLOADED,
     EV_VERIFIED,
-    EV_APPLIED
+    EV_APPLIED,
+    EV_ERROR,
+    EV_RETRY
 } FotaEvent;
 
 /* ===================== States ===================== */

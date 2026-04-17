@@ -24,3 +24,24 @@ deterministically without an RTOS.
 - IoT firmware architecture demos
 - Embedded systems education
 - Reference design for FOTA workflows
+
+## Build & Run
+```bash
+make
+./fota_demo
+```
+
+## Project Structure
+- `src/fota_manager.h` - Events, states, and public API
+- `src/fota_manager.c` - Event queue + FSM core logic
+- `src/main.c` - Super-loop demo entry point
+- `src/fota_transport.h` - Transport module interface
+- `src/fota_transport.c` - Transport stub implementation
+- `src/fota_verify.h` - Verification module interface
+- `src/fota_verify.c` - Verification stub implementation
+- `Makefile` - Simple GCC build script
+
+## Error Handling
+- `EV_ERROR` returns the FSM to `APP` from `CHECK`, `DOWNLOAD`, `VERIFY`, and `APPLY`.
+- `EV_RETRY` is handled in `CHECK`, `DOWNLOAD`, and `VERIFY` by staying in the same state.
+- Retries are counted and capped by `MAX_RETRIES` (`3`); when exceeded, FSM transitions back to `APP`.
