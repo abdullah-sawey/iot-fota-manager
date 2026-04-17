@@ -3,7 +3,7 @@
 
 int main(void)
 {
-    int i;
+    int iteration;
 
     fota_init();
 
@@ -13,7 +13,7 @@ int main(void)
     fota_enqueue(EV_VERIFIED);
     fota_enqueue(EV_APPLIED);
 
-    for (i = 0; i < 5; i++) {
+    for (iteration = 0; iteration < 5; iteration++) {
         fota_process();
     }
 

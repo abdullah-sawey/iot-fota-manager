@@ -69,7 +69,7 @@ static void fota_update(FotaEvent e)
             retry_count = 0;
         } else if (e == EV_RETRY) {
             retry_count++;
-            if (retry_count > MAX_RETRIES) {
+            if (retry_count >= MAX_RETRIES) {
                 state = ST_APP;
                 retry_count = 0;
             }
@@ -86,7 +86,7 @@ static void fota_update(FotaEvent e)
             retry_count = 0;
         } else if (e == EV_RETRY) {
             retry_count++;
-            if (retry_count > MAX_RETRIES) {
+            if (retry_count >= MAX_RETRIES) {
                 state = ST_APP;
                 retry_count = 0;
             }
@@ -103,7 +103,7 @@ static void fota_update(FotaEvent e)
             retry_count = 0;
         } else if (e == EV_RETRY) {
             retry_count++;
-            if (retry_count > MAX_RETRIES) {
+            if (retry_count >= MAX_RETRIES) {
                 state = ST_APP;
                 retry_count = 0;
             }
