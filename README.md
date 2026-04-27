@@ -56,33 +56,38 @@ without an RTOS, in pure C99.
 
 ## State Transition Diagram
 
-```
-ST_APP ──[EV_CHECK]──► ST_CHECK ──[EV_FOUND]──► ST_DOWNLOAD
-                             │                        │
-                      [EV_NOT_FOUND]           [EV_DOWNLOADED]
-                             │                        │
-                          ST_APP               ST_VERIFY
-                                                    │
-                                             [EV_VERIFIED]
-                                                    │
-                                               ST_APPLY
-                                                    │
-                                              [EV_APPLIED]
-                                                    │
-                                              ST_REBOOT
-                                                    │
-                                             [EV_REBOOTED]
-                                                    │
-                                               ST_APP
+```mermaid
+stateDiagram-v2
+    [*] --> ST_APP
 
-On EV_FAILED / EV_TIMEOUT from any active state:
-  → ST_ERROR ──[EV_ROLLBACK]──► ST_ROLLBACK ──[EV_APPLIED]──► ST_REBOOT
+    ST_APP      --> ST_CHECK    : EV_CHECK
+    ST_CHECK    --> ST_DOWNLOAD : EV_FOUND
+    ST_CHECK    --> ST_APP      : EV_NOT_FOUND
+    ST_DOWNLOAD --> ST_VERIFY   : EV_DOWNLOADED
+    ST_VERIFY   --> ST_APPLY    : EV_VERIFIED
+    ST_APPLY    --> ST_REBOOT   : EV_APPLIED
+    ST_REBOOT   --> ST_APP      : EV_REBOOTED
 
-On EV_RESET from any state:
-  → ST_APP  (immediate, bypasses queue)
+    ST_CHECK    --> ST_ERROR    : EV_FAILED / EV_TIMEOUT
+    ST_DOWNLOAD --> ST_ERROR    : EV_FAILED / EV_TIMEOUT
+    ST_VERIFY   --> ST_ERROR    : EV_FAILED / EV_TIMEOUT
+    ST_APPLY    --> ST_ERROR    : EV_FAILED / EV_TIMEOUT
 
-On EV_RETRY: stay in current state, increment retry_count.
-  When retry_count >= FOTA_MAX_RETRIES → ST_ERROR.
+    ST_ERROR    --> ST_ROLLBACK : EV_ROLLBACK
+    ST_ROLLBACK --> ST_REBOOT   : EV_APPLIED
+    ST_ROLLBACK --> ST_ERROR    : EV_FAILED
+
+    ST_CHECK    --> ST_APP      : EV_RESET
+    ST_DOWNLOAD --> ST_APP      : EV_RESET
+    ST_VERIFY   --> ST_APP      : EV_RESET
+    ST_APPLY    --> ST_APP      : EV_RESET
+    ST_ERROR    --> ST_APP      : EV_RESET
+
+    note right of ST_ERROR
+        EV_RETRY increments retry_count.
+        When retry_count >= FOTA_MAX_RETRIES
+        the active state transitions to ST_ERROR.
+    end note
 ```
 
 ---
